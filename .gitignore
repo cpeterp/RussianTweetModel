@@ -1,4 +1,2 @@
 # Ignore datasets because it is too large
-datasets/
-author_data.csv
-parsed_tweets.csv
+datasets_large/
