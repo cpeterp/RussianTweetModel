@@ -11923,63 +11923,13 @@ a.anchor-link {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Import">Import<a class="anchor-link" href="#Import">&#182;</a></h2><p>I have already pulled and formated my data from external sources, so I simply need to import it into the notebook and extract the relavant features. Troll tweets were downloaded from FiveThirtyEight, non-trols were from scraped from twitter with Twarc and data from GWU.</p>
+<h2 id="Data">Data<a class="anchor-link" href="#Data">&#182;</a></h2><p>I pulled my data from several external sources, so I needed to import it and format it inorder to get a single unified dataset. While there was a lot of meta data available, I was mostly concerned with the author, their category (troll/news outlet), and political leaning, and tweet content. Troll tweets were downloaded from FiveThirtyEight, non-trolls were from scraped from twitter with Twarc and data from GWU from a list of mainstream media outlets.</p>
+<p>To process the data, I downsampled the original datasets from several million to about 1,000,000. I then discarded tweets where the author or content was missing. I also got rid of non-english tweets, tweets that were simply a link or image with no other context, and tweets that contained only emojis.</p>
+<p>Finally, I resampled the data so that I had an equal number of-trolls and non trolls. This helps prevent class imbalances.</p>
 
 </div>
 </div>
-</div></section><section>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">tweet_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;./datasets/combined_data.csv&quot;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">,</span> 
-                         <span class="n">dtype</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;tweet_id&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;author_id&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;publish_date&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> 
-                                <span class="s1">&#39;content&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;link_url&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;account_category&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> 
-                                <span class="s1">&#39;author&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;account_type&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">})</span>
-<span class="n">tweet_data</span> <span class="o">=</span> <span class="n">tweet_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">tweet_data</span><span class="o">.</span><span class="n">account_category</span> <span class="o">==</span> <span class="s1">&#39;Troll&#39;</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">tweet_data</span><span class="o">.</span><span class="n">account_category</span> <span class="o">==</span> <span class="s1">&#39;US_News&#39;</span><span class="p">)]</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div></section><section>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span><span class="n">tweet_data</span><span class="o">.</span><span class="n">isnull</span><span class="p">(),</span> <span class="n">yticklabels</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">cbar</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">cmap</span> <span class="o">=</span> <span class="s2">&quot;viridis&quot;</span><span class="p">);</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-<div class="prompt"></div>
-
-
-
-
-<div class="output_png output_subarea ">
-<img src="data:image/png;base64,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
-"
->
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
+</div></section></section><section><section>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
@@ -11988,7 +11938,16 @@ a.anchor-link {
 
 </div>
 </div>
-</div></section><section>
+</div><div class="fragment">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>A look at how tweets are spread out over category and political leaning.</p>
+
+</div>
+</div>
+</div></div><div class="fragment">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[4]:</div>
@@ -12024,33 +11983,16 @@ a.anchor-link {
 </div>
 </div>
 
-</div></section></section><section><section>
+</div></div><div class="fragment">
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Let's take a look at the sentiment as well</p>
-
+<h2 id="Sentiment">Sentiment<a class="anchor-link" href="#Sentiment">&#182;</a></h2><p>Sentiment analysis (polarity) is one of the packages provided by TextBlob. It measures the use of negetive and postive words and assigns a corresponding score. By taking a look at sentiment across different categories, there may be a pattern that appears.</p>
+<h3 id="Sentiment-by-account_category">Sentiment by <code>account_category</code><a class="anchor-link" href="#Sentiment-by-account_category">&#182;</a></h3>
 </div>
 </div>
-</div></section><section>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Define a function that accepts text and returns the polarity.</span>
-<span class="k">def</span> <span class="nf">detect_sentiment</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">TextBlob</span><span class="p">(</span><span class="n">text</span><span class="p">)</span><span class="o">.</span><span class="n">sentiment</span><span class="o">.</span><span class="n">polarity</span>
-
-<span class="n">tweet_data</span><span class="p">[</span><span class="s1">&#39;sentiment&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tweet_data</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">detect_sentiment</span><span class="p">)</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div></section><section>
+</div></div><div class="fragment">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[6]:</div>
@@ -12085,7 +12027,15 @@ a.anchor-link {
 </div>
 </div>
 
-</div></section><section>
+</div></div></section></section><section><section>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Sentiment-by-political-leaning">Sentiment by political leaning<a class="anchor-link" href="#Sentiment-by-political-leaning">&#182;</a></h3>
+</div>
+</div>
+</div><div class="fragment">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[7]:</div>
@@ -12120,250 +12070,82 @@ a.anchor-link {
 </div>
 </div>
 
-</div></section></section><section><section>
+</div></div></section></section><section><section>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The boxplots didn't show any significan difference. Next, use groupby to take a deeper dive into sentiment</p>
+<p>Since the boxplots didn't show any significant difference, I'll use groupby to take a deeper dive into sentiment.</p>
+<p>The means vary slightly. We can see that center leaning tweets are less positive (more neautral) while Left are more positive.</p>
+<p>We can also see troll tweets have slightly higher standard deviation.</p>
 
 </div>
 </div>
-</div></section><section>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
+</div><div class="fragment">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
 <div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">tweet_data</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;account_category&#39;</span><span class="p">,</span> <span class="s1">&#39;account_type&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-<div class="prompt output_prompt">Out[8]:</div>
-
-
-
-<div class="output_html rendered_html output_subarea output_execute_result">
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead tr th {
-        text-align: left;
-    }
-
-    .dataframe thead tr:last-of-type th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr>
-      <th></th>
-      <th></th>
-      <th colspan="8" halign="left">is_eng</th>
-      <th colspan="8" halign="left">sentiment</th>
-    </tr>
-    <tr>
-      <th></th>
-      <th></th>
-      <th>count</th>
-      <th>mean</th>
-      <th>std</th>
-      <th>min</th>
-      <th>25%</th>
-      <th>50%</th>
-      <th>75%</th>
-      <th>max</th>
-      <th>count</th>
-      <th>mean</th>
-      <th>std</th>
-      <th>min</th>
-      <th>25%</th>
-      <th>50%</th>
-      <th>75%</th>
-      <th>max</th>
-    </tr>
-    <tr>
-      <th>account_category</th>
-      <th>account_type</th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th rowspan="2" valign="top">Troll</th>
-      <th>Left</th>
-      <td>15314.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>15314.0</td>
-      <td>0.071811</td>
-      <td>0.283470</td>
-      <td>-1.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.175000</td>
-      <td>1.0</td>
-    </tr>
-    <tr>
-      <th>Right</th>
-      <td>25755.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>25755.0</td>
-      <td>0.041765</td>
-      <td>0.299117</td>
-      <td>-1.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.136364</td>
-      <td>1.0</td>
-    </tr>
-    <tr>
-      <th rowspan="3" valign="top">US_News</th>
-      <th>Center</th>
-      <td>11972.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>11972.0</td>
-      <td>0.044006</td>
-      <td>0.221426</td>
-      <td>-1.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.100000</td>
-      <td>1.0</td>
-    </tr>
-    <tr>
-      <th>Left</th>
-      <td>17320.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>17320.0</td>
-      <td>0.053626</td>
-      <td>0.242326</td>
-      <td>-1.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.136364</td>
-      <td>1.0</td>
-    </tr>
-    <tr>
-      <th>Right</th>
-      <td>11777.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>11777.0</td>
-      <td>0.047574</td>
-      <td>0.240826</td>
-      <td>-1.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.136364</td>
-      <td>1.0</td>
-    </tr>
-  </tbody>
+<div class="text_cell_render border-box-sizing rendered_html">
+<table>
+<thead><tr>
+<th>account_category</th>
+<th>account_type</th>
+<th>count</th>
+<th>mean</th>
+<th>std</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Troll</td>
+<td>Left</td>
+<td>15314.0</td>
+<td>0.071811</td>
+<td>0.283470</td>
+</tr>
+<tr>
+<td>Troll</td>
+<td>Right</td>
+<td>25755.0</td>
+<td>0.041765</td>
+<td>0.299117</td>
+</tr>
+<tr>
+<td>US_News</td>
+<td>Center</td>
+<td>11972.0</td>
+<td>0.044006</td>
+<td>0.221426</td>
+</tr>
+<tr>
+<td>US_News</td>
+<td>Left</td>
+<td>17320.0</td>
+<td>0.053626</td>
+<td>0.242326</td>
+</tr>
+<tr>
+<td>US_News</td>
+<td>Right</td>
+<td>11777.0</td>
+<td>0.047574</td>
+<td>0.240826</td>
+</tr>
+</tbody>
 </table>
-</div>
-</div>
-
-</div>
 
 </div>
 </div>
-
-</div></section></section><section><section>
+</div></div></section></section><section><section>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="NLP-Preperation">NLP Preperation<a class="anchor-link" href="#NLP-Preperation">&#182;</a></h2><p>Now to start using NLP. <code>account_category</code> is a categorical feature, so I need to turn it into binary features to make classification possible.</p>
+<h2 id="NLP-Preperation">NLP Preperation<a class="anchor-link" href="#NLP-Preperation">&#182;</a></h2><p>Now to start using NLP. I need to stem the words in the tweet text. This will reduce the number of features and improve the performance of my a model.</p>
 
 </div>
 </div>
-</div></section><section>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">tweet_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">get_dummies</span><span class="p">(</span><span class="n">tweet_data</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;account_category&#39;</span><span class="p">],</span> <span class="n">drop_first</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="n">df_Troll</span> <span class="o">=</span> <span class="n">tweet_data</span><span class="p">[</span><span class="n">tweet_data</span><span class="o">.</span><span class="n">account_category_Troll</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span>
-<span class="n">df_News</span> <span class="o">=</span> <span class="n">tweet_data</span><span class="p">[</span><span class="n">tweet_data</span><span class="o">.</span><span class="n">account_category_US_News</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span>
-
-<span class="n">df_Trolls_News</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">df_Troll</span><span class="p">,</span> <span class="n">df_News</span><span class="p">])</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div></section></section><section><section>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>I need to stem the words in the tweet text as well. This will reduce the number of features and improve the performance of my a model.</p>
-
-</div>
-</div>
-</div></section><section>
+</div><div class="fragment">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[10]:</div>
@@ -12381,44 +12163,16 @@ a.anchor-link {
 </div>
 </div>
 
-</div><div class="fragment">
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[11]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">stemmed_stops</span> <span class="o">=</span> <span class="p">[</span><span class="n">stemmer</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span><span class="n">Word</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">stopwords</span><span class="o">.</span><span class="n">words</span><span class="p">(</span><span class="s1">&#39;english&#39;</span><span class="p">)]</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
 </div></div></section></section><section><section>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Now I need to do the test-train-split and evaluate my results. The options for the model I chose were determined by a grid search.</p>
+<p>Now I need to do run the model and evaluate my results. The options for the model I chose were determined by a grid search. with a pipeline. The resulting F1-scores are pretty good, about 85%.</p>
 
 </div>
 </div>
-</div></section></section><section><section>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[12]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">X</span> <span class="o">=</span> <span class="n">df_Trolls_News</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">]</span>
-<span class="n">y</span> <span class="o">=</span> <span class="n">df_Trolls_News</span><span class="p">[</span><span class="s1">&#39;account_category_Troll&#39;</span><span class="p">]</span>
-<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">tts</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div></section></section><section><section>
+</div><div class="fragment">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[13]:</div>
@@ -12461,7 +12215,16 @@ avg / total       0.85      0.84      0.84     20535
 </div>
 </div>
 
-</div></section></section><section><section>
+</div></div></section></section><section><section>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>To get a better look at some of the tweets that were incorretly or correctly classified,  I made a function to pull some of the most extreemly rated tweets out.</p>
+
+</div>
+</div>
+</div><div class="fragment">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[14]:</div>
@@ -12478,77 +12241,131 @@ avg / total       0.85      0.84      0.84     20535
 </div>
 </div>
 
-</div><div class="fragment">
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_dtm</span> <span class="o">=</span> <span class="n">vect</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">df_Trolls_News</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">])</span>
-<span class="n">proba</span> <span class="o">=</span> <span class="n">nb</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">df_dtm</span><span class="p">)</span>
-<span class="n">df_Trolls_News</span><span class="p">[</span><span class="s1">&#39;proba_troll&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">proba</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
 </div></div></section></section><section><section>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
 <div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Most Troll Like&quot;</span><span class="p">)</span>
-<span class="n">df_Trolls_News</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_Trolls_News</span><span class="o">.</span><span class="n">account_category_Troll</span><span class="o">==</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;proba_troll&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">grab_tweet</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-----------------------------------------------------------------------------------------------------------------------&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Least Troll Like&quot;</span><span class="p">)</span>
-<span class="n">df_Trolls_News</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_Trolls_News</span><span class="o">.</span><span class="n">account_category_Troll</span><span class="o">==</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;proba_troll&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">grab_tweet</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-</pre></div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="News-Outlets">News Outlets<a class="anchor-link" href="#News-Outlets">&#182;</a></h1><h1 id="Most-Troll-Like">Most Troll Like<a class="anchor-link" href="#Most-Troll-Like">&#182;</a></h1><h3 id="Author:-nytimes-|-Probability-troll:-1.00">Author: nytimes | Probability troll: 1.00<a class="anchor-link" href="#Author:-nytimes-|-Probability-troll:-1.00">&#182;</a></h3><p>Tweet text: RT @jennydeluxe: "Being black in the age of wokeness" is one of my fave episodes to date. Listen &amp; LMK what you think &gt;&gt;&gt;&gt; <a href="https://t.co/r4T…">https://t.co/r4T…</a></p>
+<h3 id="Author:-USATODAY-|-Probability-troll:-1.00">Author: USATODAY | Probability troll: 1.00<a class="anchor-link" href="#Author:-USATODAY-|-Probability-troll:-1.00">&#182;</a></h3><p>Tweet text: "All I really want to do is tell you that I'm feeling great. I'm glad I spent that evening in the hospital, and it did me a lot of good." -Stan Lee <a href="https://t.co/JZg09bqS1g">https://t.co/JZg09bqS1g</a></p>
+<h3 id="Author:-FoxNews-|-Probability-troll:-1.00">Author: FoxNews | Probability troll: 1.00<a class="anchor-link" href="#Author:-FoxNews-|-Probability-troll:-1.00">&#182;</a></h3><p>Tweet text: .@POTUS on Democrats: "I don't think they want to solve the DACA problem. I think they wanna talk about it. I think they wanna obstruct." <a href="https://t.co/zBPxHDzk6E">https://t.co/zBPxHDzk6E</a></p>
 
 </div>
 </div>
-</div>
-
-</div></section></section><section><section>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Most News Like&quot;</span><span class="p">)</span>
-<span class="n">df_Trolls_News</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_Trolls_News</span><span class="o">.</span><span class="n">account_category_Troll</span><span class="o">==</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;proba_troll&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">()</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">grab_tweet</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-----------------------------------------------------------------------------------------------------------------------&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Least News Like&quot;</span><span class="p">)</span>
-<span class="n">df_Trolls_News</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_Trolls_News</span><span class="o">.</span><span class="n">account_category_Troll</span><span class="o">==</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;proba_troll&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">()</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">grab_tweet</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
 </div></section></section><section><section>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Finally, I want to take a look at how each news outlet scored on average</p>
+<h1 id="Least-Troll-Like">Least Troll Like<a class="anchor-link" href="#Least-Troll-Like">&#182;</a></h1><h3 id="Author:-politico-|-Probability-troll:-0.00">Author: politico | Probability troll: 0.00<a class="anchor-link" href="#Author:-politico-|-Probability-troll:-0.00">&#182;</a></h3><p>Larry Kudlow has been widely seen as a leading candidate to replace Gary Cohn, despite his criticism of Trump’s decision to impose a 10 percent tariff on aluminum and 25 percent tariff on steel imports.
+ <a href="https://t.co/f3A12AevZU">https://t.co/f3A12AevZU</a> <a href="https://t.co/wpgmLzoh4p">https://t.co/wpgmLzoh4p</a></p>
+<h3 id="Author:-Reuters-|-Probability-troll:-0.00">Author: Reuters | Probability troll: 0.00<a class="anchor-link" href="#Author:-Reuters-|-Probability-troll:-0.00">&#182;</a></h3><p>North Korean leader Kim Jong Un invites South Korean President Moon Jae-in to Pyongyang potentially setting up the first meeting of Korean leaders in more than a decade <a href="https://t.co/K7PvzMSyIA">https://t.co/K7PvzMSyIA</a> @HeeShin @pearswick #PyeongChang2018 <a href="https://t.co/kUseNlZ7g2">https://t.co/kUseNlZ7g2</a></p>
+<h3 id="Author:-HuffPost-|-Probability-troll:-0.00">Author: HuffPost | Probability troll: 0.00<a class="anchor-link" href="#Author:-HuffPost-|-Probability-troll:-0.00">&#182;</a></h3><p>PyeongChang built itself a brand-new $109 million stadium to host the 2018 Winter Olympic and Paralympic Games. 
+And after just four ceremonial events ― including the #OpeningCeremony ― PyeongChang plans to tear the place down. 🤔🤔🤔
+Here's more: <a href="https://t.co/QnNcDktTVs">https://t.co/QnNcDktTVs</a></p>
 
 </div>
 </div>
-</div></section><section>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+</div></section></section><section><section>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
 <div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_Trolls_News</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_Trolls_News</span><span class="o">.</span><span class="n">account_category_Troll</span><span class="o">==</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;author&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">proba_troll</span><span class="o">.</span><span class="n">sort_values</span><span class="p">()</span>
-</pre></div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Troll-Groups">Troll Groups<a class="anchor-link" href="#Troll-Groups">&#182;</a></h1><h1 id="Most-News-Like">Most News Like<a class="anchor-link" href="#Most-News-Like">&#182;</a></h1><h3 id="Author:-KANIJJACKSON-|-Probability-troll:-0.00">Author: KANIJJACKSON | Probability troll: 0.00<a class="anchor-link" href="#Author:-KANIJJACKSON-|-Probability-troll:-0.00">&#182;</a></h3><p>Confirmed: Michael Cohen received hundreds of thousands of dollars  from a Russian oligarch Viktor Vekselberg.  The money was paid to a First Republic Bank account Cohen created  for Essential Consultants. This is the same bank  account Cohen used to pay Stormy Daniels $130,000</p>
+<h3 id="Author:-IMAPHARRELFAKE-|-Probability-troll:-0.00">Author: IMAPHARRELFAKE | Probability troll: 0.00<a class="anchor-link" href="#Author:-IMAPHARRELFAKE-|-Probability-troll:-0.00">&#182;</a></h3><p>Former Cuban President Fidel Castro dies at age 90, his brother, President Raul Castro announces. <a href="https://t.co/gHGSyRFlBi">https://t.co/gHGSyRFlBi</a></p>
+<h3 id="Author:-WORLDNEWSPOLI-|-Probability-troll:-0.00">Author: WORLDNEWSPOLI | Probability troll: 0.00<a class="anchor-link" href="#Author:-WORLDNEWSPOLI-|-Probability-troll:-0.00">&#182;</a></h3><p>Bao Bao the giant panda leaves Washington zoo for new home in China <a href="https://t.co/e6WNrKcrMI">https://t.co/e6WNrKcrMI</a> <a href="https://t.co/QnCVIUb3nQ">https://t.co/QnCVIUb3nQ</a></p>
 
 </div>
 </div>
+</div></section></section><section><section>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Least-News-Like">Least News Like<a class="anchor-link" href="#Least-News-Like">&#182;</a></h1><h3 id="Author:-DOROTHIEBELL-|-Probability-troll:-1.0">Author: DOROTHIEBELL | Probability troll: 1.0<a class="anchor-link" href="#Author:-DOROTHIEBELL-|-Probability-troll:-1.0">&#182;</a></h3><p>�#WakeUpAmerica #TeamTrump #CCOT  #2A #MAGA�#millenials #MinorityPolitics #tcot  �Vote!!��Pols think we are stupid� <a href="https://t.co/FHTb098aar">https://t.co/FHTb098aar</a></p>
+<h3 id="Author:-COVFEFENATIONUS-|-Probability-troll:-1.0">Author: COVFEFENATIONUS | Probability troll: 1.0<a class="anchor-link" href="#Author:-COVFEFENATIONUS-|-Probability-troll:-1.0">&#182;</a></h3><p>'@Acosta @jaketapper @CNN @CNNI @CNNPolitics @CNNSitRoom @WolfBlitzer @JakeTapper @TheLeadCNN @BrianStelter @AnaNavarro @DonLemon @VanJones68 @AndersonCooper @AC360 @JimAcosta  CNN IS #FAKENEWS! CNN IS #FAKENEWS! CNN IS #FAKENEWS! CNN IS #FAKENEWS! CNN IS #FAKENEWS! CNN IS #FAKENEWS!  #FAKENEWS #MAGA'</p>
+<h3 id="Author:-PRICEFORPIERCE-|-Probability-troll:-1.0">Author: PRICEFORPIERCE | Probability troll: 1.0<a class="anchor-link" href="#Author:-PRICEFORPIERCE-|-Probability-troll:-1.0">&#182;</a></h3><p>'@Sandroskeith @Keque_Mage @Always_Woke @MAGA_shopper @AutisteMoM @Dutch_Deplorabl @WanAw000 @jaxon_gator @lordcaccioepepe @HalleyBorderCol @DJTJohnMiller @WDFx2EU95 @mom_vet @ToTheHand @ThomasBernpaine @JonJ_L @HampusSelander @AndrewK_6 @Treeoflife272 @NeonReactionary @LoveUSADawn @nes4america @Silky<em>Milky</em> @dualkoondog @this1isno1 @disawooed @reallyyBecky @polNewsNet @Kekolyte2 @nia4<em>trump @JJSmithy</em> @ang_yow @tcburnett @SpaceTrills @xavispar4 @lemuriangirl @whois_John_Galt @SeanLewandowski @pacman522 @Thomas1774Paine @BoozyVonD @tmntiffers @smwrva @Lord_ofthe_Pies @Psyanidex @EvilHillaryPics @JayVanorman @laughingatitall @nancyyvonne87 @VictorOfKadesh <a href="https://t.co/lzCYFcd5qV">https://t.co/lzCYFcd5qV</a>'</p>
 
+</div>
+</div>
+</div></section></section><section><section>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Finally, I want to take a look at how each news outlet scored on average:</p>
+<table>
+<thead><tr>
+<th>Outlet</th>
+<th>Mean Score</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reuters</td>
+<td>0.013266</td>
+</tr>
+<tr>
+<td>AP</td>
+<td>0.018762</td>
+</tr>
+<tr>
+<td>chicagotribune</td>
+<td>0.039258</td>
+</tr>
+<tr>
+<td>ABC</td>
+<td>0.041498</td>
+</tr>
+<tr>
+<td>politico</td>
+<td>0.050556</td>
+</tr>
+<tr>
+<td>WSJ</td>
+<td>0.052525</td>
+</tr>
+<tr>
+<td>NPR</td>
+<td>0.079233</td>
+</tr>
+<tr>
+<td>CNN</td>
+<td>0.087843</td>
+</tr>
+<tr>
+<td>USATODAY</td>
+<td>0.114722</td>
+</tr>
+<tr>
+<td>Forbes</td>
+<td>0.116943</td>
+</tr>
+<tr>
+<td>nytimes</td>
+<td>0.122085</td>
+</tr>
+<tr>
+<td>washingtonpost</td>
+<td>0.126263</td>
+</tr>
+<tr>
+<td>nypost</td>
+<td>0.165859</td>
+</tr>
+<tr>
+<td>FoxNews</td>
+<td>0.168716</td>
+</tr>
+<tr>
+<td>HuffPost</td>
+<td>0.220815</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
 </div></section></section><section><section>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
@@ -12584,7 +12401,7 @@ avg / total       0.85      0.84      0.84     20535
 
 </div>
 </div>
-</div></section><section>
+</div></section></section><section><section>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
@@ -12598,7 +12415,7 @@ avg / total       0.85      0.84      0.84     20535
 
 </div>
 </div>
-</div></section><section>
+</div></section></section><section><section>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
@@ -12607,7 +12424,7 @@ avg / total       0.85      0.84      0.84     20535
 
 </div>
 </div>
-</div>
+</div></section></section>
 </div>
 </div>
 
